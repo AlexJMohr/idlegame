@@ -14,20 +14,14 @@
 		BUILDINGS.reduce((sum, b) => sum + ownedState.current[b.name] * b.baseRate, 0)
 	);
 
+	const fmtCompact = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
+	const fmtStandard = new Intl.NumberFormat('en');
+
 	function fmt(n: bigint | number): string {
 		const v = typeof n === 'bigint' ? Number(n) : n;
-		const tiers: [number, string][] = [
-			[1e15, 'Qa'],
-			[1e12, 'T'],
-			[1e9, 'B'],
-			[1e6, 'M'],
-			[1e3, 'K']
-		];
-		for (const [threshold, suffix] of tiers) {
-			if (v >= threshold) return (v / threshold).toFixed(1) + suffix;
-		}
-		return Math.floor(v).toString();
+		return v >= 1e6 ? fmtCompact.format(v) : fmtStandard.format(Math.floor(v));
 	}
+
 
 	$effect(() => {
 		let lastTime = Date.now();

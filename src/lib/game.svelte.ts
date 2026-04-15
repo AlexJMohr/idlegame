@@ -68,15 +68,15 @@ export const CLICK_UPGRADES = [
 		desc: 'Click rapidly to boost production. Max ×2.',
 		cost: 100n
 	},
-	{ id: 'click-2', name: 'Frenzy II', desc: 'Increase max frenzy to ×3.', cost: 500n },
-	{ id: 'click-3', name: 'Frenzy III', desc: 'Increase max frenzy to ×4.', cost: 2_500n },
-	{ id: 'click-4', name: 'Frenzy IV', desc: 'Increase max frenzy to ×5.', cost: 12_500n },
-	{ id: 'click-5', name: 'Frenzy V', desc: 'Increase max frenzy to ×6.', cost: 62_500n },
-	{ id: 'click-6', name: 'Frenzy VI', desc: 'Increase max frenzy to ×7.', cost: 312_500n },
-	{ id: 'click-7', name: 'Frenzy VII', desc: 'Increase max frenzy to ×8.', cost: 1_562_500n },
-	{ id: 'click-8', name: 'Frenzy VIII', desc: 'Increase max frenzy to ×9.', cost: 7_812_500n },
-	{ id: 'click-9', name: 'Frenzy IX', desc: 'Increase max frenzy to ×10.', cost: 39_062_500n },
-	{ id: 'click-10', name: 'Frenzy X', desc: 'Increase max frenzy to ×11.', cost: 195_312_500n }
+	{ id: 'click-2', name: 'Frenzy II', desc: 'Increase max frenzy to ×3.', cost: 2_500n },
+	{ id: 'click-3', name: 'Frenzy III', desc: 'Increase max frenzy to ×4.', cost: 50_000n },
+	{ id: 'click-4', name: 'Frenzy IV', desc: 'Increase max frenzy to ×5.', cost: 750_000n },
+	{ id: 'click-5', name: 'Frenzy V', desc: 'Increase max frenzy to ×6.', cost: 8_000_000n },
+	{ id: 'click-6', name: 'Frenzy VI', desc: 'Increase max frenzy to ×7.', cost: 80_000_000n },
+	{ id: 'click-7', name: 'Frenzy VII', desc: 'Increase max frenzy to ×8.', cost: 800_000_000n },
+	{ id: 'click-8', name: 'Frenzy VIII', desc: 'Increase max frenzy to ×9.', cost: 8_000_000_000n },
+	{ id: 'click-9', name: 'Frenzy IX', desc: 'Increase max frenzy to ×10.', cost: 80_000_000_000n },
+	{ id: 'click-10', name: 'Frenzy X', desc: 'Increase max frenzy to ×11.', cost: 800_000_000_000n }
 ] as const;
 
 const bigintSerializer = {

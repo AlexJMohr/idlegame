@@ -152,8 +152,10 @@ export function costOf(name: BuildingName): bigint {
 }
 
 export function click() {
-	clickHeatState.current = Math.min(1, clickHeatState.current + FRENZY_HEAT_GAIN);
-	timeSinceClick = 0;
+	if (CLICK_UPGRADES.some((u) => purchasedState.current[u.id])) {
+		clickHeatState.current = Math.min(1, clickHeatState.current + FRENZY_HEAT_GAIN);
+		timeSinceClick = 0;
+	}
 	pointsState.current += 1n;
 }
 

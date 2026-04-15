@@ -23,6 +23,7 @@
 	import FrenzyBar from '$lib/components/FrenzyBar.svelte';
 	import Building from '$lib/components/Building.svelte';
 	import UpgradeItem from '$lib/components/UpgradeItem.svelte';
+	import { fmt } from '$lib/fmt';
 
 	const purchasedFrenzyLevels = $derived(
 		CLICK_UPGRADES.filter((u) => purchasedState.current[u.id]).length
@@ -52,17 +53,6 @@
 		return nextIdx === -1 ? [...CLICK_UPGRADES] : CLICK_UPGRADES.slice(0, nextIdx + 1);
 	});
 
-	const visibleBuildingUpgrades = $derived.by(() => {
-		const revealedNames = new Set(visibleBuildings.map((b) => b.name));
-		return UPGRADES.filter((u) => {
-			if (!revealedNames.has(u.building)) return false;
-			if (purchasedState.current[u.id]) return true;
-			const first = UPGRADES.find(
-				(bu) => bu.building === u.building && !purchasedState.current[bu.id]
-			);
-			return first?.id === u.id;
-		});
-	});
 
 	const visibleBuildings = $derived.by(() => {
 		const result: (typeof BUILDINGS)[number][] = [];
@@ -197,18 +187,34 @@
 				>
 					Buildings
 				</div>
-				{#each visibleBuildingUpgrades as u (u.id)}
-					<UpgradeItem
-						name={u.building}
-						desc={u.desc}
-						cost={u.cost}
-						purchased={!!purchasedState.current[u.id]}
-						canAfford={pointsState.current >= u.cost}
-						unlocked={(ownedState.current[u.building] ?? 0) >= u.requires}
-						showMultiplier={true}
-						requiresHint="{ownedState.current[u.building] ?? 0}/{u.requires} owned"
-						onbuy={() => buyUpgrade(u.id, u.cost)}
-					/>
+				{#each visibleBuildings as b (b.name)}
+					{@const name = b.name as BuildingName}
+					{@const multiplier = multiplierFor(name)}
+					{@const owned = ownedState.current[name] ?? 0}
+					{@const next = UPGRADES.find((u) => u.building === name && !purchasedState.current[u.id])}
+					{@const unlocked = next ? owned >= next.requires : false}
+					{@const canAfford = next ? pointsState.current >= next.cost : false}
+					<button
+						onclick={() => next && buyUpgrade(next.id, next.cost)}
+						disabled={!next || !unlocked || !canAfford}
+						class="flex w-full items-center justify-between border-b border-gray-100 px-4 py-3 text-left transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-35"
+					>
+						<div>
+							<div class="font-semibold">{b.name}</div>
+							<div class="text-xs text-gray-400">currently ×{multiplier}</div>
+							{#if next && !unlocked}
+								<div class="text-xs text-gray-300">{owned}/{next.requires} owned</div>
+							{/if}
+						</div>
+						<div class="ml-3 shrink-0 text-right">
+							{#if next}
+								<div class="font-semibold">{fmt(next.cost)}</div>
+								<div class="text-gray-400">(×2)</div>
+							{:else}
+								<div class="text-xs text-gray-300">maxed</div>
+							{/if}
+						</div>
+					</button>
 				{/each}
 			</div>
 		{/if}

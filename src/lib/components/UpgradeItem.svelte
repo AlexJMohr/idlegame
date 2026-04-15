@@ -26,10 +26,10 @@
 	}: Props = $props();
 </script>
 
-<div
-	class="flex items-center justify-between border-b border-gray-100 px-4 py-3 {purchased
-		? 'opacity-35'
-		: ''}"
+<button
+	onclick={onbuy}
+	disabled={purchased || !unlocked || !canAfford}
+	class="flex w-full items-center justify-between border-b border-gray-100 px-4 py-3 text-left transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-35"
 >
 	<div class="min-w-0">
 		<div class="font-semibold">{name}</div>
@@ -42,16 +42,10 @@
 		{#if purchased}
 			<div class="text-gray-400">✓</div>
 		{:else}
-			<button
-				onclick={onbuy}
-				disabled={!unlocked || !canAfford}
-				class="rounded border border-gray-200 px-2 py-1 text-xs transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-			>
-				<div>{fmt(cost)}</div>
-				{#if showMultiplier}
-					<div class="text-gray-400">(×2)</div>
-				{/if}
-			</button>
+			<div class="font-semibold">{fmt(cost)}</div>
+			{#if showMultiplier}
+				<div class="text-gray-400">(×2)</div>
+			{/if}
 		{/if}
 	</div>
-</div>
+</button>

@@ -51,10 +51,9 @@ resource "proxmox_virtual_environment_container" "idlegame" {
 # Render setup script with secrets — gitignored, marked sensitive in state
 resource "local_sensitive_file" "setup_script" {
   content = templatefile("${path.module}/setup.sh.tftpl", {
-    docker_image = var.docker_image
     tunnel_token = cloudflare_zero_trust_tunnel_cloudflared.idlegame.tunnel_token
-    ghcr_user    = var.ghcr_user
-    ghcr_token   = var.ghcr_token
+    github_pat   = var.github_pat
+    github_repo  = var.github_repo
   })
   filename        = "${path.module}/.setup-rendered.sh"
   file_permission = "0600"

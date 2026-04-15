@@ -11,11 +11,9 @@ container_disk_size = 10
 
 # ssh_public_key_path = "~/.ssh/id_ed25519.pub"  # default, uncomment to override
 
-# GitHub username and PAT with read:packages scope
-ghcr_user  = "YourGitHubUsername"
-ghcr_token = "ghp_..."
-
-docker_image = "ghcr.io/yourgithubusername/idlegame:latest"
+# Classic PAT (ghp_...) with repo scope — Settings > Developer settings > Personal access tokens > Tokens (classic)
+github_pat  = "ghp_..."
+github_repo = "YourGitHubUsername/idlegame"
 
 # Cloudflare API token needs: Account > Cloudflare Tunnel > Edit, Zone > DNS > Edit
 cloudflare_api_token  = "your-cloudflare-api-token"

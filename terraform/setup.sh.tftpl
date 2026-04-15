@@ -1,36 +1,62 @@
 #!/bin/bash
 set -euo pipefail
 
-# Install Docker
+# Install podman
 apt-get update -qq
-apt-get install -y -qq ca-certificates curl
-curl -fsSL https://get.docker.com | sh
-systemctl enable --now docker
+apt-get install -y -qq podman ca-certificates curl jq
 
 # Systemd unit for the game container
 cat > /etc/systemd/system/idlegame.service << 'EOF'
 [Unit]
 Description=idlegame
-After=docker.service
-Requires=docker.service
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Restart=always
-ExecStartPre=-/usr/bin/docker stop idlegame
-ExecStartPre=-/usr/bin/docker rm idlegame
-ExecStart=/usr/bin/docker run --rm --name idlegame \
+ExecStartPre=-/usr/bin/podman stop idlegame
+ExecStartPre=-/usr/bin/podman rm idlegame
+ExecStart=/usr/bin/podman run --rm --name idlegame \
   -p 127.0.0.1:3000:3000 \
-  ${docker_image}
-ExecStop=/usr/bin/docker stop idlegame
+  localhost/idlegame:latest
+ExecStop=/usr/bin/podman stop idlegame
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-echo "${ghcr_token}" | docker login ghcr.io -u "${ghcr_user}" --password-stdin
-docker pull ${docker_image}
 systemctl daemon-reload
-systemctl enable --now idlegame
+systemctl enable idlegame  # started by first CI run, not here
+
+# Install GitHub Actions self-hosted runner
+mkdir -p /opt/actions-runner
+cd /opt/actions-runner
+curl -fsSL -o runner.tar.gz \
+  "https://github.com/actions/runner/releases/download/v2.333.1/actions-runner-linux-x64-2.333.1.tar.gz"
+tar xzf runner.tar.gz && rm runner.tar.gz
+
+REG_TOKEN_RESPONSE=$(curl -sL -X POST \
+  -H "Authorization: token ${github_pat}" \
+  -H "Accept: application/vnd.github+json" \
+  "https://api.github.com/repos/${github_repo}/actions/runners/registration-token")
+REG_TOKEN=$(echo "$REG_TOKEN_RESPONSE" | jq -r '.token')
+if [ -z "$REG_TOKEN" ] || [ "$REG_TOKEN" = "null" ]; then
+  echo "ERROR: failed to get runner registration token" >&2
+  echo "$REG_TOKEN_RESPONSE" >&2
+  exit 1
+fi
+
+RUNNER_ALLOW_RUNASROOT=1 ./config.sh \
+  --url "https://github.com/${github_repo}" \
+  --token "$REG_TOKEN" \
+  --name "idlegame-lxc" \
+  --labels "idlegame" \
+  --unattended \
+  --replace
+
+RUNNER_ALLOW_RUNASROOT=1 ./svc.sh install root
+./svc.sh start
+cd /
 
 # Install cloudflared and register tunnel
 curl -fsSL -o /tmp/cloudflared.deb \

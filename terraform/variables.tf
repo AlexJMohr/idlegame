@@ -51,20 +51,15 @@ variable "proxmox_ssh_user" {
   default     = "root"
 }
 
-# Docker / GHCR
-variable "ghcr_user" {
-  description = "GitHub username for GHCR login"
-  type        = string
-}
-
-variable "ghcr_token" {
-  description = "GitHub PAT with read:packages scope for GHCR login"
+# GitHub
+variable "github_pat" {
+  description = "Classic GitHub PAT (ghp_...) with repo scope — fine-grained PATs do not support the runner registration API"
   type        = string
   sensitive   = true
 }
 
-variable "docker_image" {
-  description = "Full Docker image ref, e.g. ghcr.io/amohr/idlegame:latest"
+variable "github_repo" {
+  description = "GitHub repo for runner registration, e.g. AlexJMohr/idlegame"
   type        = string
 }
 
